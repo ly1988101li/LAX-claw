@@ -223,7 +223,7 @@ for (const plugin of plugins) {
 
       if (hasDeps) {
         runNpm(
-          ['install', '--omit=dev', '--no-audit', '--no-fund'],
+          ['install', '--omit=dev', '--no-audit', '--no-fund', '--legacy-peer-deps'],
           { cwd: pluginSrcDir, stdio: 'inherit' }
         );
       }
