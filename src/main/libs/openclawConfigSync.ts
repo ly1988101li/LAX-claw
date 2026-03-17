@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import type { CoworkConfig, CoworkExecutionMode } from '../coworkStore';
 import type { TelegramOpenClawConfig, DiscordOpenClawConfig } from '../im/types';
-import type { DingTalkOpenClawConfig, FeishuOpenClawConfig, QQOpenClawConfig, WecomOpenClawConfig } from '../im/types';
+import type { DingTalkOpenClawConfig, FeishuOpenClawConfig, QQOpenClawConfig, WecomOpenClawConfig, PopoOpenClawConfig } from '../im/types';
 import { resolveRawApiConfig } from './claudeSettings';
 import type { OpenClawEngineManager } from './openclawEngineManager';
 import { parseChannelSessionKey } from './openclawChannelSessionSync';
@@ -396,6 +396,7 @@ type OpenClawConfigSyncDeps = {
   getFeishuConfig: () => FeishuOpenClawConfig | null;
   getQQConfig: () => QQOpenClawConfig | null;
   getWecomConfig: () => WecomOpenClawConfig | null;
+  getPopoConfig: () => PopoOpenClawConfig | null;
   getMcpBridgeConfig?: () => McpBridgeConfig | null;
   getSkillsPrompt?: () => string | null;
 };
@@ -409,6 +410,7 @@ export class OpenClawConfigSync {
   private readonly getFeishuConfig: () => FeishuOpenClawConfig | null;
   private readonly getQQConfig: () => QQOpenClawConfig | null;
   private readonly getWecomConfig: () => WecomOpenClawConfig | null;
+  private readonly getPopoConfig: () => PopoOpenClawConfig | null;
   private readonly getMcpBridgeConfig?: () => McpBridgeConfig | null;
   private readonly getSkillsPrompt?: () => string | null;
 
@@ -421,6 +423,7 @@ export class OpenClawConfigSync {
     this.getFeishuConfig = deps.getFeishuConfig;
     this.getQQConfig = deps.getQQConfig;
     this.getWecomConfig = deps.getWecomConfig;
+    this.getPopoConfig = deps.getPopoConfig;
     this.getMcpBridgeConfig = deps.getMcpBridgeConfig;
     this.getSkillsPrompt = deps.getSkillsPrompt;
   }
@@ -482,6 +485,8 @@ export class OpenClawConfigSync {
     const qqConfig = this.getQQConfig();
 
     const wecomConfig = this.getWecomConfig();
+
+    const popoConfig = this.getPopoConfig();
 
     const hasAnyChannel = hasDingTalkOpenClaw;
 
@@ -550,6 +555,7 @@ export class OpenClawConfigSync {
                 if (id === 'feishu-openclaw-plugin') return !!(feishuConfig?.enabled && feishuConfig.appId);
                 if (id === 'qqbot') return !!(qqConfig?.enabled && qqConfig.appId);
                 if (id === 'wecom-openclaw-plugin') return !!(wecomConfig?.enabled && wecomConfig.botId);
+                if (id === 'moltbot-popo') return !!(popoConfig?.enabled && popoConfig.appKey);
                 return true; // other plugins stay enabled
               })();
               return [id, { enabled: pluginEnabled }];
@@ -777,6 +783,43 @@ export class OpenClawConfigSync {
         sendThinkingMessage: wecomConfig.sendThinkingMessage ?? true,
       };
       managedConfig.channels = { ...(managedConfig.channels as Record<string, unknown> || {}), wecom: wecomChannel };
+    }
+
+    // Sync POPO OpenClaw channel config (via moltbot-popo plugin)
+    if (popoConfig?.enabled && popoConfig.appKey) {
+      const popoChannel: Record<string, unknown> = {
+        enabled: true,
+        appKey: popoConfig.appKey,
+        appSecret: popoConfig.appSecret,
+        token: popoConfig.token,
+        aesKey: popoConfig.aesKey,
+        webhookPort: popoConfig.webhookPort || 3100,
+        dmPolicy: popoConfig.dmPolicy || 'open',
+        allowFrom: (() => {
+          const ids = popoConfig.allowFrom?.length ? [...popoConfig.allowFrom] : [];
+          if (popoConfig.dmPolicy === 'open' && !ids.includes('*')) ids.push('*');
+          return ids;
+        })(),
+        groupPolicy: popoConfig.groupPolicy || 'open',
+        groupAllowFrom: (() => {
+          const ids = popoConfig.groupAllowFrom?.length ? [...popoConfig.groupAllowFrom] : [];
+          if (popoConfig.groupPolicy === 'open' && !ids.includes('*')) ids.push('*');
+          return ids;
+        })(),
+      };
+      if (popoConfig.textChunkLimit && popoConfig.textChunkLimit !== 3000) {
+        popoChannel.textChunkLimit = popoConfig.textChunkLimit;
+      }
+      if (popoConfig.richTextChunkLimit && popoConfig.richTextChunkLimit !== 5000) {
+        popoChannel.richTextChunkLimit = popoConfig.richTextChunkLimit;
+      }
+      if (popoConfig.webhookBaseUrl) {
+        popoChannel.webhookBaseUrl = popoConfig.webhookBaseUrl;
+      }
+      if (popoConfig.webhookPath && popoConfig.webhookPath !== '/popo/callback') {
+        popoChannel.webhookPath = popoConfig.webhookPath;
+      }
+      managedConfig.channels = { ...(managedConfig.channels as Record<string, unknown> || {}), 'moltbot-popo': popoChannel };
     }
 
     const nextContent = `${JSON.stringify(managedConfig, null, 2)}\n`;
