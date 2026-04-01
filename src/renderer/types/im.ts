@@ -372,6 +372,8 @@ export interface WeixinGatewayStatus {
 
 // ==================== Common IM Types ====================
 
+export type IMPlatform = keyof Omit<IMGatewayConfig, 'settings'> | 'xiaomifeng';
+
 export interface IMGatewayConfig {
   dingtalk: DingTalkMultiInstanceConfig;
   feishu: FeishuMultiInstanceConfig;

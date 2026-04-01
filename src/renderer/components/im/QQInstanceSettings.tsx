@@ -61,9 +61,9 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
   return (
     <div className="space-y-3">
       {/* Instance Header: Name, Status, Enable Toggle, Delete */}
-      <div className="flex items-center gap-3 pb-3 border-b dark:border-claude-darkBorder/60 border-claude-border/60">
+      <div className="flex items-center gap-3 pb-3 border-b border-border-subtle">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-white dark:bg-claude-darkBorder/30 p-1">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-surface border border-border-subtle p-1">
             <img
               src={PlatformRegistry.logo('qq')}
               alt="QQ"
@@ -81,11 +81,11 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
                 if (e.key === 'Escape') { setNameValue(instance.instanceName); setEditingName(false); }
               }}
               autoFocus
-              className="text-sm font-medium dark:text-claude-darkText text-claude-text bg-transparent border-b border-claude-accent focus:outline-none px-0 py-0"
+              className="text-sm font-medium text-foreground bg-transparent border-b border-primary focus:outline-none px-0 py-0"
             />
           ) : (
             <h3
-              className="text-sm font-medium dark:text-claude-darkText text-claude-text cursor-pointer hover:text-claude-accent transition-colors truncate"
+              className="text-sm font-medium text-foreground cursor-pointer hover:text-primary transition-colors truncate"
               onClick={() => setEditingName(true)}
               title={i18nService.t('imQQClickToRename')}
             >
@@ -114,7 +114,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
           type="button"
           onClick={onToggleEnabled}
           className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-            instance.enabled ? 'bg-claude-accent' : 'dark:bg-claude-darkSurface bg-claude-surface'
+            instance.enabled ? 'bg-primary' : 'bg-surface'
           }`}
           title={instance.enabled ? i18nService.t('imQQDisableInstance') : i18nService.t('imQQEnableInstance')}
         >
@@ -136,8 +136,8 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
       </div>
 
       {/* Guide */}
-      <div className="mb-3 p-3 rounded-lg border border-dashed dark:border-claude-darkBorder/60 border-claude-border/60">
-        <ol className="text-xs text-claude-textSecondary dark:text-claude-darkTextSecondary space-y-1 list-decimal list-inside">
+      <div className="mb-3 p-3 rounded-lg border border-dashed border-border-subtle">
+        <ol className="text-xs text-secondary space-y-1 list-decimal list-inside">
           <li>{i18nService.t('imQQGuideStep1')}</li>
           <li>{i18nService.t('imQQGuideStep2')}</li>
           <li>{i18nService.t('imQQGuideStep3')}</li>
@@ -151,7 +151,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
                 console.error('[IM] Failed to open guide URL:', err);
               });
             }}
-            className="mt-2 text-xs font-medium text-claude-accentLight dark:text-claude-accentLight hover:text-claude-accent dark:hover:text-blue-200 underline underline-offset-2 transition-colors"
+            className="mt-2 text-xs font-medium text-primary dark:text-primary hover:text-primary dark:hover:text-blue-200 underline underline-offset-2 transition-colors"
           >
             {i18nService.t('imViewGuide')}
           </button>
@@ -160,7 +160,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
 
       {/* AppID */}
       <div className="space-y-1.5">
-        <label className="block text-xs font-medium dark:text-claude-darkTextSecondary text-claude-textSecondary">
+        <label className="block text-xs font-medium text-secondary">
           AppID
         </label>
         <div className="relative">
@@ -169,7 +169,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
             value={instance.appId}
             onChange={(e) => onConfigChange({ appId: e.target.value })}
             onBlur={() => void onSave()}
-            className="block w-full rounded-lg dark:bg-claude-darkSurface/80 bg-claude-surface/80 dark:border-claude-darkBorder/60 border-claude-border/60 border focus:border-claude-accent focus:ring-1 focus:ring-claude-accent/30 dark:text-claude-darkText text-claude-text px-3 py-2 pr-8 text-sm transition-colors"
+            className="block w-full rounded-lg bg-surface border-border-subtle border focus:border-primary focus:ring-1 focus:ring-primary/30 text-foreground px-3 py-2 pr-8 text-sm transition-colors"
             placeholder="102xxxxx"
           />
           {instance.appId && (
@@ -177,7 +177,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
               <button
                 type="button"
                 onClick={() => { onConfigChange({ appId: '' }); void onSave({ appId: '' }); }}
-                className="p-0.5 rounded text-claude-textSecondary dark:text-claude-darkTextSecondary hover:text-claude-accent transition-colors"
+                className="p-0.5 rounded text-secondary hover:text-primary transition-colors"
                 title={i18nService.t('clear') || 'Clear'}
               >
                 <XCircleIconSolid className="h-4 w-4" />
@@ -189,7 +189,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
 
       {/* AppSecret */}
       <div className="space-y-1.5">
-        <label className="block text-xs font-medium dark:text-claude-darkTextSecondary text-claude-textSecondary">
+        <label className="block text-xs font-medium text-secondary">
           AppSecret
         </label>
         <div className="relative">
@@ -198,7 +198,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
             value={instance.appSecret}
             onChange={(e) => onConfigChange({ appSecret: e.target.value })}
             onBlur={() => void onSave()}
-            className="block w-full rounded-lg dark:bg-claude-darkSurface/80 bg-claude-surface/80 dark:border-claude-darkBorder/60 border-claude-border/60 border focus:border-claude-accent focus:ring-1 focus:ring-claude-accent/30 dark:text-claude-darkText text-claude-text px-3 py-2 pr-16 text-sm transition-colors"
+            className="block w-full rounded-lg bg-surface border-border-subtle border focus:border-primary focus:ring-1 focus:ring-primary/30 text-foreground px-3 py-2 pr-16 text-sm transition-colors"
             placeholder="••••••••••••"
           />
           <div className="absolute right-2 inset-y-0 flex items-center gap-1">
@@ -206,7 +206,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
               <button
                 type="button"
                 onClick={() => { onConfigChange({ appSecret: '' }); void onSave({ appSecret: '' }); }}
-                className="p-0.5 rounded text-claude-textSecondary dark:text-claude-darkTextSecondary hover:text-claude-accent transition-colors"
+                className="p-0.5 rounded text-secondary hover:text-primary transition-colors"
                 title={i18nService.t('clear') || 'Clear'}
               >
                 <XCircleIconSolid className="h-4 w-4" />
@@ -215,27 +215,27 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
             <button
               type="button"
               onClick={() => setShowSecrets(prev => ({ ...prev, 'appSecret': !prev['appSecret'] }))}
-              className="p-0.5 rounded text-claude-textSecondary dark:text-claude-darkTextSecondary hover:text-claude-accent transition-colors"
+              className="p-0.5 rounded text-secondary hover:text-primary transition-colors"
               title={showSecrets['appSecret'] ? (i18nService.t('hide') || 'Hide') : (i18nService.t('show') || 'Show')}
             >
               {showSecrets['appSecret'] ? <EyeIcon className="h-4 w-4" /> : <EyeSlashIcon className="h-4 w-4" />}
             </button>
           </div>
         </div>
-        <p className="text-xs text-claude-textSecondary dark:text-claude-darkTextSecondary">
+        <p className="text-xs text-secondary">
           {i18nService.t('imQQCredentialHint')}
         </p>
       </div>
 
       {/* Advanced Settings (collapsible) */}
       <details className="group">
-        <summary className="cursor-pointer text-xs font-medium dark:text-claude-darkTextSecondary text-claude-textSecondary hover:text-claude-accent transition-colors">
+        <summary className="cursor-pointer text-xs font-medium text-secondary hover:text-primary transition-colors">
           {i18nService.t('imAdvancedSettings')}
         </summary>
-        <div className="mt-2 space-y-3 pl-2 border-l-2 border-claude-border/30 dark:border-claude-darkBorder/30">
+        <div className="mt-2 space-y-3 pl-2 border-l-2 border-border-subtle">
           {/* DM Policy */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium dark:text-claude-darkTextSecondary text-claude-textSecondary">
+            <label className="block text-xs font-medium text-secondary">
               DM Policy
             </label>
             <select
@@ -245,7 +245,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
                 onConfigChange(update);
                 void onSave(update);
               }}
-              className="block w-full rounded-lg dark:bg-claude-darkSurface/80 bg-claude-surface/80 dark:border-claude-darkBorder/60 border-claude-border/60 border focus:border-claude-accent focus:ring-1 focus:ring-claude-accent/30 dark:text-claude-darkText text-claude-text px-3 py-2 text-sm transition-colors"
+              className="block w-full rounded-lg bg-surface border-border-subtle border focus:border-primary focus:ring-1 focus:ring-primary/30 text-foreground px-3 py-2 text-sm transition-colors"
             >
               <option value="open">{i18nService.t('imDmPolicyOpen')}</option>
               <option value="pairing">{i18nService.t('imDmPolicyPairing')}</option>
@@ -255,7 +255,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
 
           {/* Allow From */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium dark:text-claude-darkTextSecondary text-claude-textSecondary">
+            <label className="block text-xs font-medium text-secondary">
               Allow From (User IDs)
             </label>
             <div className="flex gap-2">
@@ -275,7 +275,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
                     }
                   }
                 }}
-                className="block flex-1 rounded-lg dark:bg-claude-darkSurface/80 bg-claude-surface/80 dark:border-claude-darkBorder/60 border-claude-border/60 border focus:border-claude-accent focus:ring-1 focus:ring-claude-accent/30 dark:text-claude-darkText text-claude-text px-3 py-2 text-sm transition-colors"
+                className="block flex-1 rounded-lg bg-surface border-border-subtle border focus:border-primary focus:ring-1 focus:ring-primary/30 text-foreground px-3 py-2 text-sm transition-colors"
                 placeholder={i18nService.t('imQQUserIdPlaceholder')}
               />
               <button
@@ -289,7 +289,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
                     void onSave({ allowFrom: newIds });
                   }
                 }}
-                className="px-3 py-2 rounded-lg text-xs font-medium bg-claude-accent/10 text-claude-accent hover:bg-claude-accent/20 transition-colors"
+                className="px-3 py-2 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
               >
                 {i18nService.t('add') || '添加'}
               </button>
@@ -299,7 +299,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
                 {instance.allowFrom.map((id) => (
                   <span
                     key={id}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs dark:bg-claude-darkSurface/80 bg-claude-surface/80 dark:border-claude-darkBorder/60 border-claude-border/60 border dark:text-claude-darkText text-claude-text"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs bg-surface border-border-subtle border text-foreground"
                   >
                     {id}
                     <button
@@ -309,7 +309,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
                         onConfigChange({ allowFrom: newIds });
                         void onSave({ allowFrom: newIds });
                       }}
-                      className="text-claude-textSecondary dark:text-claude-darkTextSecondary hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                      className="text-secondary hover:text-red-500 dark:hover:text-red-400 transition-colors"
                     >
                       <XMarkIcon className="w-3 h-3" />
                     </button>
@@ -321,7 +321,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
 
           {/* Group Policy */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium dark:text-claude-darkTextSecondary text-claude-textSecondary">
+            <label className="block text-xs font-medium text-secondary">
               Group Policy
             </label>
             <select
@@ -331,7 +331,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
                 onConfigChange(update);
                 void onSave(update);
               }}
-              className="block w-full rounded-lg dark:bg-claude-darkSurface/80 bg-claude-surface/80 dark:border-claude-darkBorder/60 border-claude-border/60 border focus:border-claude-accent focus:ring-1 focus:ring-claude-accent/30 dark:text-claude-darkText text-claude-text px-3 py-2 text-sm transition-colors"
+              className="block w-full rounded-lg bg-surface border-border-subtle border focus:border-primary focus:ring-1 focus:ring-primary/30 text-foreground px-3 py-2 text-sm transition-colors"
             >
               <option value="open">Open</option>
               <option value="allowlist">Allowlist</option>
@@ -342,14 +342,14 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
           {/* Group Allow From */}
           {instance.groupPolicy === 'allowlist' && (
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium dark:text-claude-darkTextSecondary text-claude-textSecondary">
+              <label className="block text-xs font-medium text-secondary">
                 Group Allow From (Group IDs)
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {instance.groupAllowFrom.map((id) => (
                   <span
                     key={id}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs dark:bg-claude-darkSurface/80 bg-claude-surface/80 dark:border-claude-darkBorder/60 border-claude-border/60 border dark:text-claude-darkText text-claude-text"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs bg-surface border-border-subtle border text-foreground"
                   >
                     {id}
                     <button
@@ -359,7 +359,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
                         onConfigChange({ groupAllowFrom: newIds });
                         void onSave({ groupAllowFrom: newIds });
                       }}
-                      className="text-claude-textSecondary dark:text-claude-darkTextSecondary hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                      className="text-secondary hover:text-red-500 dark:hover:text-red-400 transition-colors"
                     >
                       <XMarkIcon className="w-3 h-3" />
                     </button>
@@ -371,7 +371,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
 
           {/* History Limit */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium dark:text-claude-darkTextSecondary text-claude-textSecondary">
+            <label className="block text-xs font-medium text-secondary">
               History Limit
             </label>
             <input
@@ -379,7 +379,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
               value={instance.historyLimit}
               onChange={(e) => onConfigChange({ historyLimit: parseInt(e.target.value) || 50 })}
               onBlur={() => void onSave()}
-              className="block w-full rounded-lg dark:bg-claude-darkSurface/80 bg-claude-surface/80 dark:border-claude-darkBorder/60 border-claude-border/60 border focus:border-claude-accent focus:ring-1 focus:ring-claude-accent/30 dark:text-claude-darkText text-claude-text px-3 py-2 text-sm transition-colors"
+              className="block w-full rounded-lg bg-surface border-border-subtle border focus:border-primary focus:ring-1 focus:ring-primary/30 text-foreground px-3 py-2 text-sm transition-colors"
               min="1"
               max="200"
             />
@@ -387,7 +387,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
 
           {/* Markdown Support */}
           <div className="flex items-center justify-between">
-            <label className="text-xs font-medium dark:text-claude-darkTextSecondary text-claude-textSecondary">
+            <label className="text-xs font-medium text-secondary">
               Markdown Support
             </label>
             <button
@@ -398,7 +398,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
                 void onSave(update);
               }}
               className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                instance.markdownSupport ? 'bg-claude-accent' : 'dark:bg-claude-darkSurface bg-claude-surface'
+                instance.markdownSupport ? 'bg-primary' : 'bg-surface'
               }`}
             >
               <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
@@ -409,7 +409,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
 
           {/* Image Server Base URL */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium dark:text-claude-darkTextSecondary text-claude-textSecondary">
+            <label className="block text-xs font-medium text-secondary">
               Image Server Base URL
             </label>
             <input
@@ -417,10 +417,10 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
               value={instance.imageServerBaseUrl}
               onChange={(e) => onConfigChange({ imageServerBaseUrl: e.target.value })}
               onBlur={() => void onSave()}
-              className="block w-full rounded-lg dark:bg-claude-darkSurface/80 bg-claude-surface/80 dark:border-claude-darkBorder/60 border-claude-border/60 border focus:border-claude-accent focus:ring-1 focus:ring-claude-accent/30 dark:text-claude-darkText text-claude-text px-3 py-2 text-sm transition-colors"
+              className="block w-full rounded-lg bg-surface border-border-subtle border focus:border-primary focus:ring-1 focus:ring-primary/30 text-foreground px-3 py-2 text-sm transition-colors"
               placeholder="http://your-ip:18765"
             />
-            <p className="text-xs text-claude-textSecondary dark:text-claude-darkTextSecondary">
+            <p className="text-xs text-secondary">
               {i18nService.t('imQQImageServerHint')}
             </p>
           </div>
@@ -433,7 +433,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
           type="button"
           onClick={onTestConnectivity}
           disabled={testingPlatform === 'qq'}
-          className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-xl border dark:border-claude-darkBorder border-claude-border dark:text-claude-darkText text-claude-text dark:hover:bg-claude-darkSurfaceHover hover:bg-claude-surfaceHover disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
+          className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-xl border border-border text-foreground hover:bg-surface-raised disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
         >
           <SignalIcon className="h-3.5 w-3.5 mr-1.5" />
           {testingPlatform === 'qq'
