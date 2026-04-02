@@ -4,8 +4,9 @@
  */
 
 import React, { useState } from 'react';
-import { XCircleIcon as XCircleIconSolid } from '@heroicons/react/20/solid';
-import { EyeIcon, EyeSlashIcon, SignalIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon, XCircleIcon as XCircleIconSolid } from '@heroicons/react/20/solid';
+import { SignalIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import TrashIcon from '../icons/TrashIcon';
 import type { QQInstanceConfig, QQInstanceStatus, QQOpenClawConfig, IMConnectivityTestResult } from '../../types/im';
 import { i18nService } from '../../services/i18n';
 import { PlatformRegistry } from '@shared/platform';
@@ -114,7 +115,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
           type="button"
           onClick={onToggleEnabled}
           className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-            instance.enabled ? 'bg-primary' : 'bg-surface'
+            instance.enabled ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
           }`}
           title={instance.enabled ? i18nService.t('imQQDisableInstance') : i18nService.t('imQQEnableInstance')}
         >
@@ -127,10 +128,10 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
         <button
           type="button"
           onClick={onDelete}
-          className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-500 hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
+          className="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-red-500 hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
           title={i18nService.t('imQQDeleteInstance')}
         >
-          <TrashIcon className="h-3.5 w-3.5" />
+          <TrashIcon className="h-4 w-4" />
           {language === 'zh' ? '删除' : 'Delete'}
         </button>
       </div>
@@ -398,7 +399,7 @@ const QQInstanceSettings: React.FC<QQInstanceSettingsProps> = ({
                 void onSave(update);
               }}
               className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                instance.markdownSupport ? 'bg-primary' : 'bg-surface'
+                instance.markdownSupport ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
               }`}
             >
               <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
