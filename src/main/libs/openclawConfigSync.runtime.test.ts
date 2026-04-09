@@ -200,4 +200,59 @@ describe('OpenClawConfigSync runtime config output', () => {
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     expect(config.channels.dingtalk).not.toHaveProperty('_agentBinding');
   });
+
+  test('writes weixin channel config using dmPolicy and allowFrom instead of unsupported accountId', async () => {
+    const { OpenClawConfigSync } = await import('./openclawConfigSync');
+
+    const sync = new OpenClawConfigSync({
+      engineManager: {
+        getConfigPath: () => configPath,
+        getGatewayToken: () => 'gateway-token',
+        getStateDir: () => stateDir,
+      } as never,
+      getCoworkConfig: () => ({
+        workingDirectory: tmpDir,
+        systemPrompt: '',
+        executionMode: 'local',
+        agentEngine: 'openclaw',
+        memoryEnabled: false,
+        memoryImplicitUpdateEnabled: false,
+        memoryLlmJudgeEnabled: false,
+        memoryGuardLevel: 'balanced',
+        memoryUserMemoriesMaxItems: 100,
+        skipMissedJobs: false,
+      }),
+      isEnterprise: () => false,
+      getTelegramOpenClawConfig: () => null,
+      getDiscordOpenClawConfig: () => null,
+      getDingTalkInstances: () => [],
+      getFeishuInstances: () => [],
+      getQQInstances: () => [],
+      getWecomConfig: () => null,
+      getPopoConfig: () => null,
+      getNimConfig: () => null,
+      getNeteaseBeeChanConfig: () => null,
+      getWeixinConfig: () => ({
+        enabled: true,
+        accountId: '97a130e3b62f@im.bot',
+        dmPolicy: 'open',
+        allowFrom: [],
+        debug: false,
+      }),
+      getIMSettings: () => null,
+      getSkillsList: () => [],
+      getAgents: () => [],
+    });
+
+    const result = sync.sync('weixin-schema');
+    expect(result.ok).toBe(true);
+
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    expect(config.channels['openclaw-weixin']).toEqual({
+      enabled: true,
+      dmPolicy: 'open',
+      allowFrom: ['*'],
+    });
+    expect(config.channels['openclaw-weixin']).not.toHaveProperty('accountId');
+  });
 });
