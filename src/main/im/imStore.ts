@@ -26,6 +26,8 @@ import {
   IMSettings,
   Platform,
   IMSessionMapping,
+  EmailMultiInstanceConfig,
+  EmailInstanceConfig,
   DEFAULT_DINGTALK_OPENCLAW_CONFIG,
   DEFAULT_DINGTALK_MULTI_INSTANCE_CONFIG,
   DEFAULT_FEISHU_OPENCLAW_CONFIG,
@@ -40,6 +42,8 @@ import {
   DEFAULT_POPO_CONFIG,
   DEFAULT_WEIXIN_CONFIG,
   DEFAULT_IM_SETTINGS,
+  DEFAULT_EMAIL_MULTI_INSTANCE_CONFIG,
+  DEFAULT_EMAIL_INSTANCE_CONFIG,
 } from './types';
 
 interface StoredConversationReplyRoute {
@@ -99,7 +103,7 @@ export class IMStore {
     const mappingCols = this.db.pragma('table_info(im_session_mappings)') as Array<{
       name: string;
     }>;
-    const mappingColNames = mappingCols.map((r) => r.name);
+    const mappingColNames = mappingCols.map(r => r.name);
     if (!mappingColNames.includes('agent_id')) {
       this.db
         .prepare("ALTER TABLE im_session_mappings ADD COLUMN agent_id TEXT NOT NULL DEFAULT 'main'")
@@ -970,6 +974,64 @@ export class IMStore {
     this.setConfigValue('settings', { ...current, ...settings });
   }
 
+  // ==================== Email Channel Config ====================
+
+  /**
+   * Get email channel multi-instance configuration
+   */
+  getEmailConfig(): EmailMultiInstanceConfig {
+    const raw = this.db.prepare('SELECT value FROM im_config WHERE key = ?').get('email') as
+      | { value: string }
+      | undefined;
+
+    if (!raw?.value) {
+      return DEFAULT_EMAIL_MULTI_INSTANCE_CONFIG;
+    }
+
+    try {
+      const parsed = JSON.parse(raw.value);
+
+      // Migration logic: detect v1 format (single account) and convert to v2 (multi-instance)
+      if (parsed.email && !parsed.instances) {
+        console.log('[EmailChannel] Migrating from v1 config format');
+        return {
+          instances: [
+            {
+              instanceId: 'email-1',
+              instanceName: 'Default',
+              enabled: parsed.enabled ?? false,
+              transport: 'imap',
+              email: parsed.email,
+              password: parsed.password,
+              agentId: 'main',
+              ...DEFAULT_EMAIL_INSTANCE_CONFIG,
+            },
+          ],
+        };
+      }
+
+      // v2 format: multi-instance mode
+      return {
+        instances: (parsed.instances || []).map((inst: any) => ({
+          ...DEFAULT_EMAIL_INSTANCE_CONFIG,
+          ...inst,
+        })),
+      };
+    } catch (error) {
+      console.error('[EmailChannel] Failed to parse config:', error);
+      return DEFAULT_EMAIL_MULTI_INSTANCE_CONFIG;
+    }
+  }
+
+  /**
+   * Set email channel multi-instance configuration
+   */
+  setEmailConfig(config: EmailMultiInstanceConfig): void {
+    this.db
+      .prepare('INSERT OR REPLACE INTO im_config (key, value) VALUES (?, ?)')
+      .run('email', JSON.stringify(config));
+  }
+
   // ==================== Utility ====================
 
   /**
@@ -1183,13 +1245,16 @@ export class IMStore {
       // and all group conversations for the platform, since group membership per-bot
       // is not yet stored — group: prefix is a temporary heuristic until im_account_id
       // column is introduced.
-      query = "SELECT im_conversation_id, platform, cowork_session_id, agent_id, created_at, last_active_at FROM im_session_mappings WHERE platform = ? AND (im_conversation_id LIKE ? OR im_conversation_id LIKE 'group:%') ORDER BY last_active_at DESC";
+      query =
+        "SELECT im_conversation_id, platform, cowork_session_id, agent_id, created_at, last_active_at FROM im_session_mappings WHERE platform = ? AND (im_conversation_id LIKE ? OR im_conversation_id LIKE 'group:%') ORDER BY last_active_at DESC";
       params = [platform, `${accountId}:%`];
     } else if (platform) {
-      query = 'SELECT im_conversation_id, platform, cowork_session_id, agent_id, created_at, last_active_at FROM im_session_mappings WHERE platform = ? ORDER BY last_active_at DESC';
+      query =
+        'SELECT im_conversation_id, platform, cowork_session_id, agent_id, created_at, last_active_at FROM im_session_mappings WHERE platform = ? ORDER BY last_active_at DESC';
       params = [platform];
     } else {
-      query = 'SELECT im_conversation_id, platform, cowork_session_id, agent_id, created_at, last_active_at FROM im_session_mappings ORDER BY last_active_at DESC';
+      query =
+        'SELECT im_conversation_id, platform, cowork_session_id, agent_id, created_at, last_active_at FROM im_session_mappings ORDER BY last_active_at DESC';
       params = [];
     }
 
