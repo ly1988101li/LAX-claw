@@ -125,6 +125,8 @@ import {
 import { getLogFilePath, getRecentMainLogEntries, initLogger } from './logger';
 import type { McpServerFormData } from './mcpStore';
 import { McpStore } from './mcpStore';
+import { OpenClawSessionPolicyIpc } from './openclawSessionPolicy/constants';
+import { loadOpenClawSessionPolicyConfig, saveOpenClawSessionPolicyConfig } from './openclawSessionPolicy/store';
 import { SkillManager } from './skillManager';
 import { getSkillServiceManager } from './skillServices';
 import { SqliteStore } from './sqliteStore';
@@ -177,6 +179,7 @@ const resolveDefaultAgentModelRef = (): string => {
     modelId: config.model.trim(),
     apiType: config.apiType,
     providerName: apiResolution.providerMetadata?.providerName,
+    authType: apiResolution.providerMetadata?.authType,
     codingPlanEnabled: apiResolution.providerMetadata?.codingPlanEnabled,
     supportsImage: apiResolution.providerMetadata?.supportsImage,
     modelName: apiResolution.providerMetadata?.modelName,
@@ -194,6 +197,7 @@ const buildAvailableOpenClawProviders = (): Record<string, { models: Array<{ id:
         modelId: model.id,
         apiType: provider.apiType,
         providerName: provider.providerName,
+        authType: provider.authType,
         codingPlanEnabled: provider.codingPlanEnabled,
         supportsImage: model.supportsImage,
         modelName: model.name,
@@ -934,6 +938,7 @@ const getOpenClawConfigSync = (): OpenClawConfigSync => {
       engineManager: getOpenClawEngineManager(),
       getCoworkConfig: () => getCoworkStore().getConfig(),
       isEnterprise: () => !!getStore().get('enterprise_config'),
+      getOpenClawSessionPolicy: () => loadOpenClawSessionPolicyConfig(getStore()),
       getSkillsList: () =>
         getSkillManager()
           .listSkills()
@@ -3457,6 +3462,35 @@ if (!gotTheLock) {
     }
   });
 
+  ipcMain.handle(OpenClawSessionPolicyIpc.Get, async () => {
+    try {
+      return {
+        success: true,
+        config: loadOpenClawSessionPolicyConfig(getStore()),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to get OpenClaw session policy',
+      };
+    }
+  });
+
+  ipcMain.handle(OpenClawSessionPolicyIpc.Set, async (_event, config: unknown) => {
+    try {
+      const savedConfig = saveOpenClawSessionPolicyConfig(getStore(), config);
+      return {
+        success: true,
+        config: savedConfig,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to save OpenClaw session policy',
+      };
+    }
+  });
+
   ipcMain.handle(
     'cowork:memory:listEntries',
     async (
@@ -5025,52 +5059,7 @@ if (!gotTheLock) {
     return false;
   });
 
-  // Qwen OAuth 登录
-  ipcMain.handle('qwen:oauth:login', async event => {
-    const { startQwenOAuth } = await import('./libs/qwenOAuth');
-
-    const progressCallback = {
-      update: (message: string) => {
-        event.sender.send('qwen:oauth:progress', message);
-      },
-      stop: (message?: string) => {
-        if (message) {
-          event.sender.send('qwen:oauth:progress', message);
-        }
-      },
-    };
-
-    try {
-      const oauthToken = await startQwenOAuth(progressCallback);
-      return {
-        success: true,
-        data: oauthToken,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'OAuth login failed',
-      };
-    }
-  });
-
-  // Qwen OAuth 刷新 token
-  ipcMain.handle('qwen:oauth:refresh', async (_event, refreshToken: string) => {
-    const { refreshQwenOAuthToken } = await import('./libs/qwenOAuth');
-
-    try {
-      const oauthToken = await refreshQwenOAuthToken(refreshToken);
-      return {
-        success: true,
-        data: oauthToken,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Token refresh failed',
-      };
-    }
-  });
+  // ─── end OAuth ───
 
   // 企微 SDK 授权弹窗白名单域名
   const WECOM_AUTH_HOSTNAMES = new Set([
