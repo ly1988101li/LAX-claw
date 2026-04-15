@@ -197,7 +197,8 @@ describe('OpenClawConfigSync runtime config output', () => {
     expect(result.bindingsChanged).toBe(true);
 
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    expect(config.channels.dingtalk).not.toHaveProperty('_agentBinding');
+    expect(config.channels['dingtalk-connector']).not.toHaveProperty('_agentBinding');
+    expect(config.channels).not.toHaveProperty('dingtalk');
   });
 
   test('prefers external lark for feishu without stale feishu entry and keeps bundled qqbot entry', async () => {
