@@ -28,7 +28,7 @@ const WelcomeDialog: React.FC<WelcomeDialogProps> = ({ onLogin, onCustomModel, o
       </button>
 
       {/* content */}
-      <div className="relative z-10 flex flex-col items-center px-10 py-12 max-w-sm w-full">
+      <div className="relative z-10 flex flex-col items-center py-12 w-[420px]">
         {/* logo */}
         <img
           src="logo.png"
@@ -77,14 +77,14 @@ const WelcomeDialog: React.FC<WelcomeDialogProps> = ({ onLogin, onCustomModel, o
           />
           <button
             onClick={onLogin}
-            className="flex-1 py-3 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 active:opacity-80"
+            className="w-[204px] h-10 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 active:opacity-80"
             style={{ backgroundColor: 'rgba(72, 133, 255, 1)' }}
           >
             {i18nService.t('welcomeLogin')}
           </button>
           <button
             onClick={onCustomModel}
-            className="flex-1 py-3 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 active:opacity-80"
+            className="w-[204px] h-10 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 active:opacity-80"
             style={{ backgroundColor: 'rgba(54, 57, 63, 1)' }}
           >
             {i18nService.t('welcomeCustomModel')}
