@@ -1300,7 +1300,7 @@ export class OpenClawConfigSync {
         accounts[inst.instanceId.slice(0, 8)] = buildFeishuAccountConfig(inst, secretVar);
       }
 
-      managedConfig.channels = { ...(managedConfig.channels as Record<string, unknown> || {}), feishu: { accounts } };
+      managedConfig.channels = { ...(managedConfig.channels as Record<string, unknown> || {}), feishu: { enabled: true, accounts } };
     }
 
     // Sync DingTalk OpenClaw channel config (via dingtalk-connector plugin) — multi-instance via accounts
@@ -1331,7 +1331,7 @@ export class OpenClawConfigSync {
         accounts[inst.instanceId.slice(0, 8)] = buildDingTalkAccountConfig(inst, secretVar);
       }
 
-      const dingtalkChannel: Record<string, unknown> = { accounts };
+      const dingtalkChannel: Record<string, unknown> = { enabled: true, accounts };
 
       managedConfig.channels = { ...(managedConfig.channels as Record<string, unknown> || {}), [DINGTALK_OPENCLAW_CHANNEL]: dingtalkChannel };
     }
@@ -1368,7 +1368,7 @@ export class OpenClawConfigSync {
         accounts[inst.instanceId.slice(0, 8)] = buildQQAccountConfig(inst, secretVar);
       }
 
-      managedConfig.channels = { ...(managedConfig.channels as Record<string, unknown> || {}), qqbot: { accounts } };
+      managedConfig.channels = { ...(managedConfig.channels as Record<string, unknown> || {}), qqbot: { enabled: true, accounts } };
     }
 
     // Sync WeCom OpenClaw channel config (via wecom-openclaw-plugin) — multi-instance via accounts
