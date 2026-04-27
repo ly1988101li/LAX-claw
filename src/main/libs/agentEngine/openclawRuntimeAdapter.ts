@@ -1374,13 +1374,13 @@ export class OpenClawRuntimeAdapter extends EventEmitter implements CoworkRuntim
 
     const agent = this.store.getAgent(agentId);
     const rawCurrentModel = session.modelOverride || agent?.model || '';
-    const currentModel = rawCurrentModel ? this.normalizeModelRef(rawCurrentModel) : '';
-    if (currentModel && currentModel !== rawCurrentModel) {
-      if (session.modelOverride) {
-        this.store.updateSession(sessionId, { modelOverride: currentModel });
-      } else if (agent?.id) {
-        this.store.updateAgent(agent.id, { model: currentModel });
-      }
+    // Normalize only agent-level model refs (may need provider migration).
+    // Session modelOverride is user-selected and must not be rewritten.
+    const currentModel = session.modelOverride
+      ? rawCurrentModel
+      : (rawCurrentModel ? this.normalizeModelRef(rawCurrentModel) : '');
+    if (!session.modelOverride && currentModel && currentModel !== rawCurrentModel && agent?.id) {
+      this.store.updateAgent(agent.id, { model: currentModel });
     }
     if (currentModel && currentModel !== this.lastPatchedModelBySession.get(sessionId)) {
       try {

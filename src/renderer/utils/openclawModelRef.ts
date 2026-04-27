@@ -38,6 +38,8 @@ export function resolveOpenClawModelRef<T extends ModelRefInput>(
     const exact = availableModels.find((model) => toOpenClawModelRef(model) === normalizedRef) ?? null;
     if (exact) return exact;
 
+    console.log('[openclawModelRef] exact match failed for', normalizedRef, 'available refs:', availableModels.map(m => toOpenClawModelRef(m)));
+
     const slashIndex = normalizedRef.indexOf('/');
     const providerId = normalizedRef.slice(0, slashIndex);
     const modelId = normalizedRef.slice(slashIndex + 1);

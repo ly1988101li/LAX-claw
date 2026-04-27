@@ -285,6 +285,7 @@ const CoworkView: React.FC<CoworkViewProps> = ({ onRequestAppSettings, onShowSki
 
       // Start the actual session immediately with fallback title
       const sessionModelOverride = headerSelectedModel ? toOpenClawModelRef(headerSelectedModel) : '';
+      console.log('[CoworkView] creating session:', { modelId: headerSelectedModel?.id, providerKey: headerSelectedModel?.providerKey, isServerModel: headerSelectedModel?.isServerModel, sessionModelOverride, agentModel: currentAgent?.model });
       const { session: startedSession, error: startError } = await coworkService.startSession({
         prompt,
         title: fallbackTitle,

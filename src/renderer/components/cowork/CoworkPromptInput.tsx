@@ -198,6 +198,10 @@ const CoworkPromptInput = React.forwardRef<CoworkPromptInputRef, CoworkPromptInp
     engine: coworkAgentEngine,
   });
 
+  if (sessionId && currentSession) {
+    console.log('[CoworkPromptInput] model resolve:', { sessionId, currentSessionId: currentSession.id, modelOverride: currentSession.modelOverride, resolvedName: agentSelectedModel?.name, resolvedProvider: agentSelectedModel?.providerKey, resolvedIsServer: agentSelectedModel?.isServerModel });
+  }
+
   const isLarge = size === 'large';
   const minHeight = isLarge ? 60 : 24;
   const maxHeight = isLarge ? 200 : 200;
@@ -925,6 +929,7 @@ const CoworkPromptInput = React.forwardRef<CoworkPromptInputRef, CoworkPromptInp
                         ? async (nextModel) => {
                             if (!nextModel) return;
                             const modelRef = toOpenClawModelRef(nextModel);
+                            console.log('[CoworkPromptInput] model selected:', { id: nextModel.id, providerKey: nextModel.providerKey, isServerModel: nextModel.isServerModel, modelRef });
                             if (sessionId) {
                               await coworkService.patchSession(sessionId, { model: modelRef });
                               if (currentAgent && agentModelIsInvalid) {
