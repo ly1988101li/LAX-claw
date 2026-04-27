@@ -5661,6 +5661,36 @@ if (!gotTheLock) {
             const cs = getCoworkStore();
             return cs.getConfig().workingDirectory;
           },
+          (agent) => {
+            const cs = getCoworkStore();
+            const existing = cs.getAgent(agent.id);
+            const updates = {
+              name: agent.name,
+              description: agent.description,
+              systemPrompt: agent.systemPrompt,
+              identity: agent.identity,
+              model: agent.model,
+              icon: agent.icon,
+              skillIds: agent.skillIds,
+              enabled: agent.enabled,
+            };
+            if (existing) {
+              cs.updateAgent(agent.id, updates);
+            } else {
+              cs.createAgent({
+                id: agent.id,
+                name: agent.name,
+                description: agent.description,
+                systemPrompt: agent.systemPrompt,
+                identity: agent.identity,
+                model: agent.model,
+                icon: agent.icon,
+                skillIds: agent.skillIds,
+                source: 'custom',
+              });
+              cs.updateAgent(agent.id, { enabled: agent.enabled });
+            }
+          },
         );
       } catch (error) {
         console.error('[Enterprise] config sync failed:', error);
