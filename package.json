@@ -8,28 +8,28 @@
   "license": "MIT",
   "version": "2026.4.25",
   "openclaw": {
-    "version": "v2026.4.14",
+    "version": "v2026.4.26",
     "repo": "https://github.com/openclaw/openclaw.git",
     "plugins": [
       {
         "id": "dingtalk-connector",
         "npm": "@dingtalk-real-ai/dingtalk-connector",
-        "version": "0.8.16"
+        "version": "0.8.19"
       },
       {
         "id": "openclaw-lark",
         "npm": "@larksuite/openclaw-lark",
-        "version": "2026.4.7"
+        "version": "2026.4.8"
       },
       {
         "id": "wecom-openclaw-plugin",
         "npm": "@wecom/wecom-openclaw-plugin",
-        "version": "2026.4.22"
+        "version": "2026.4.27"
       },
       {
         "id": "openclaw-weixin",
         "npm": "@tencent-weixin/openclaw-weixin",
-        "version": "2.1.7"
+        "version": "2.1.10"
       },
       {
         "id": "moltbot-popo",
