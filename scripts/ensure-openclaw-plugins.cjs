@@ -196,7 +196,7 @@ function runOpenClawCli(args, opts = {}) {
     stdio: opts.stdio || 'inherit',
     cwd: opts.cwd || rootDir,
     env: { ...process.env, ...opts.env },
-    timeout: opts.timeout || 5 * 60 * 1000,
+    timeout: opts.timeout || 15 * 60 * 1000,
   });
 
   if (result.error) {
