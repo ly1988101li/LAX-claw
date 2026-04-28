@@ -207,6 +207,13 @@ const CoworkPromptInput = React.forwardRef<CoworkPromptInputRef, CoworkPromptInp
   const minHeight = isLarge ? 60 : 24;
   const maxHeight = isLarge ? 200 : 200;
 
+  const effectiveSelectedModel = resolveEffectiveModel({
+    sessionId,
+    agentSelectedModel,
+    globalSelectedModel,
+  });
+  const modelSupportsImage = !!effectiveSelectedModel?.supportsImage;
+
   // Load skills on mount
   useEffect(() => {
     const loadSkills = async () => {
@@ -378,7 +385,7 @@ const CoworkPromptInput = React.forwardRef<CoworkPromptInputRef, CoworkPromptInp
     dispatch(setDraftPrompt({ sessionId: draftKey, draft: '' }));
     dispatch(clearDraftAttachments(draftKey));
     setImageVisionHint(false);
-  }, [value, isStreaming, disabled, onSubmit, activeSkillIds, skills, attachments, showFolderSelector, workingDirectory, dispatch, draftKey]);
+  }, [value, isStreaming, disabled, onSubmit, activeSkillIds, skills, attachments, showFolderSelector, workingDirectory, dispatch, draftKey, effectiveSelectedModel?.id, modelSupportsImage]);
 
   const handleSelectSkill = useCallback((skill: Skill) => {
     dispatch(toggleActiveSkill(skill.id));
@@ -458,13 +465,6 @@ const CoworkPromptInput = React.forwardRef<CoworkPromptInputRef, CoworkPromptInp
       onWorkingDirectoryChange(path);
     }
   };
-
-  const effectiveSelectedModel = resolveEffectiveModel({
-    sessionId,
-    agentSelectedModel,
-    globalSelectedModel,
-  });
-  const modelSupportsImage = !!effectiveSelectedModel?.supportsImage;
 
   const addAttachment = useCallback((filePath: string, imageInfo?: { isImage: boolean; dataUrl?: string }) => {
     if (!filePath) return;
