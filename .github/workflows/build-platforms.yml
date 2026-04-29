@@ -84,6 +84,10 @@ jobs:
 
       - name: Build Windows
         run: npm run dist:win
+        env:
+          # 确保空字符串，防止 electron-builder 尝试代码签名
+          CSC_LINK: ''
+          CSC_KEY_PASSWORD: ''
 
       - uses: actions/upload-artifact@v4
         with:
