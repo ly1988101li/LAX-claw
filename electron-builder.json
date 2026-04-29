@@ -143,7 +143,8 @@
           "!**/__tests__/**"
         ]
       }
-    ]
+    ],
+    "sign": false
   },
   "dmg": {
     "sign": false
