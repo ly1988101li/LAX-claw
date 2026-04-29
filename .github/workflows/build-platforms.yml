@@ -82,13 +82,6 @@ jobs:
 
       - run: npm install
 
-      # Windows: setup python-runtime only if archive secret is available
-      - name: Setup Python Runtime
-        if: secrets.WINDOWS_PYTHON_ARCHIVE != ''
-        run: npm run setup:python-runtime
-        env:
-          LOBSTERAI_PORTABLE_PYTHON_ARCHIVE: ${{ secrets.WINDOWS_PYTHON_ARCHIVE }}
-
       - name: Build Windows
         run: npm run dist:win
 
