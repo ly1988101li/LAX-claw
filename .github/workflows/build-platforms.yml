@@ -28,21 +28,20 @@ env:
 jobs:
   # ========== macOS 构建 ==========
   build-macos:
-    if: ${{ github.event_name == 'push' || inputs.build_macos }}
+    if: ${{ false }}  # 已禁用，只构建 Windows
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24.x'
+      - name: Install pnpm
+        run: npm install -g pnpm
       - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: npm-${{ runner.os }}-
-
-      - name: Install pnpm
-        run: npm install -g pnpm
 
       - run: npm install
 
@@ -57,13 +56,6 @@ jobs:
 
       - name: Build macOS
         run: npm run dist:mac
-        env:
-          # 签名环境变量 (如果有证书)
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -80,29 +72,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24.x'
+      - name: Install pnpm
+        run: npm install -g pnpm
       - uses: actions/cache@v4
         with:
           path: ~\AppData\Local\npm-cache
           key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: npm-${{ runner.os }}-
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
       - run: npm install
 
-      # Windows 需要 Python 运行时
-      - name: Setup Python Runtime
-        run: npm run setup:python-runtime
-        env:
-          LOBSTERAI_PORTABLE_PYTHON_ARCHIVE: ${{ secrets.WINDOWS_PYTHON_ARCHIVE }}
-
       - name: Build Windows
-        run: npm run dist:win
-        env:
-          CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
-          OPENCLAW_SKIP_PLUGINS: "1"
+        run: |
+          Remove-Item -Path Env:WIN_CSC_LINK -ErrorAction SilentlyContinue
+          Remove-Item -Path Env:WIN_CSC_KEY_PASSWORD -ErrorAction SilentlyContinue
+          npm run predist:win
+          npm run dist:win
+        shell: powershell
 
       - uses: actions/upload-artifact@v4
         with:
@@ -112,21 +98,20 @@ jobs:
 
   # ========== Linux 构建 ==========
   build-linux:
-    if: ${{ github.event_name == 'push' || inputs.build_linux }}
+    if: ${{ false }}  # 已禁用，只构建 Windows
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24.x'
+      - name: Install pnpm
+        run: npm install -g pnpm
       - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: npm-${{ runner.os }}-
-
-      - name: Install pnpm
-        run: npm install -g pnpm
 
       - name: Install Dependencies
         run: |
@@ -148,8 +133,7 @@ jobs:
 
   # ========== 创建 Release ==========
   create-release:
-    needs: [build-macos, build-windows, build-linux]
-    runs-on: ubuntu-latest
+    needs: [build-windows]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v4
@@ -163,9 +147,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifacts/macos-build/*.dmg
             artifacts/windows-build/*.exe
-            artifacts/linux-build/*
           draft: true
           prerelease: ${{ contains(github.ref, '-beta') || contains(github.ref, '-alpha') || contains(github.ref, '-rc') }}
           generate_release_notes: true
